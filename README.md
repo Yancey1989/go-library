@@ -31,6 +31,22 @@
     |--math.h
     `--math.so
   ```
+### Cgo的内存管理
+  Cgo允许我们在Go语言中声明一个C类型的变量，但由于Go的内存管理并不知道C的内存分配情况，所以通常需要我们手动调用`C.free`来释放C中的内存。
+  ```golang
+  // #include <stdio.h>
+  // #include <stdlib.h>
+  import "C"
+  import "unsafe"
+
+  func Print(s string) {
+      cs := C.CString(s)
+      C.fputs(cs, (*C.FILE)(C.stdout))
+      C.free(unsafe.Pointer(cs))
+  }
+  ```
+  - `C.CString`会将Go的字符串转换成为C语言的字符串，这个操作会使用C语言申请一块内存，我们要记得在函数结束时调用`C.free`来释放C语言申请的内存。
+  - `unsafe.Pointer`相当于C语言中的`void*`, `C.CString`会返回一个指针来指向`char*`的首地址。
 ## 在C语言中调用`math.add`
   ```c
   #include "libmath.h"
@@ -39,7 +55,7 @@
     return 0;
   }
   ```
-  编译上述C代码并将`libmath.so`将入到环境变量LD_LIBRARY_PATH中
+  编译上述C语言代码
   ```bash
   g++ ./main.cpp -o main -L ../ -I ../ -lmath
   ```
