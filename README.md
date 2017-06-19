@@ -46,7 +46,7 @@
   }
   ```
   - `C.CString`会将Go的字符串转换成为C语言的字符串，这个操作会使用C语言申请一块内存，我们要记得在函数结束时调用`C.free`来释放C语言申请的内存。
-  - `unsafe.Pointer`相当于C语言中的`void*`, `C.CString`会返回一个指针来指向`char*`的首地址。
+  - `unsafe.Pointer`相当于C语言中的`void*`, `C.CString`会返回一个指针来指向`char*`的地址。
 ## 在C语言中调用`math.add`
   ```c
   #include "libmath.h"
